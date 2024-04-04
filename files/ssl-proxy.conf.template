@@ -1,0 +1,16 @@
+server {
+  listen              443 ssl;
+  listen              [::]:443 ssl;
+
+  server_name         ${HOSTNAME};
+
+  ssl_password_file   /etc/nginx/passphrase.txt;
+  ssl_certificate     /etc/nginx/certificate.pem;
+  ssl_certificate_key /etc/nginx/certificate.pem;
+  ssl_protocols       TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+  ssl_ciphers         HIGH:!aNULL:!MD5;
+
+  location / {
+    proxy_pass http://localhost:${APP_PORT};
+  }
+}
