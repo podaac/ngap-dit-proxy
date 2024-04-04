@@ -21,11 +21,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version
+        id: version
+        run: echo version=$(cat version.txt) >> $GITHUB_OUTPUT
+
       #   -- Build --
       - name: Build
-        run: docker build -t "ngap-dit-proxy:$(cat version.txt)" .
+        run: docker build -t "ngap-dit-proxy:{{ steps.version.outputs.version }}" .
       - name: Tag as latest
         if: github.ref == 'refs/heads/main'
-        run: docker tag ghcr.io/podaac/ngap-dit-proxy:$(cat version.txt) ghcr.io/podaac/ngap-dit-proxy:latest
+        run: docker tag ghcr.io/podaac/ngap-dit-proxy:{{ steps.version.outputs.version }} ghcr.io/podaac/ngap-dit-proxy:latest
       - name: Publish Docker images
         run: docker image push -a ghcr.io/podaac/ngap-dit-proxy
