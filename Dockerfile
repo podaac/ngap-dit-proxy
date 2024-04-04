@@ -1,5 +1,8 @@
 FROM nginx:mainline-alpine-slim
 
+LABEL org.opencontainers.image.source=https://github.com/podaac/ngap-dit-proxy
+LABEL org.opencontainers.image.licenses=BSD-2-Clause
+
 RUN set -x \
   && apk update \
   && apk add aws-cli cronie openssl

@@ -27,7 +27,7 @@ jobs:
 
       #   -- Build --
       - name: Build
-        run: docker build -t "ngap-dit-proxy:${{ steps.version.outputs.version }}" .
+        run: docker build -t "ghcr.io/podaac/ngap-dit-proxy:${{ steps.version.outputs.version }}" .
       - name: Tag as latest
         if: github.ref == 'refs/heads/main'
         run: docker tag ghcr.io/podaac/ngap-dit-proxy:${{ steps.version.outputs.version }} ghcr.io/podaac/ngap-dit-proxy:latest
