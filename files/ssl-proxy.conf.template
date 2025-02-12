@@ -11,6 +11,7 @@ server {
   ssl_ciphers         HIGH:!aNULL:!MD5;
 
   location / {
+    client_max_body_size 0;
     proxy_pass http://localhost:${APP_PORT};
   }
 }
