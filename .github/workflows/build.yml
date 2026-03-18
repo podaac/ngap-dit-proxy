@@ -1,13 +1,26 @@
 name: Build
 
-on: 
+on:
   push:
     branches:
-      - '*'
+      - '**'
     tags-ignore:
       - '*'
     paths-ignore:
       - 'bumpver.toml'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to build
+        required: true
+        type: choice
+        options:
+          - main
+          - fix/nginx-large-upload-support
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
@@ -15,6 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref_name }}
+
       - uses: docker/login-action@v3.0.0
         with:
           registry: ghcr.io
@@ -23,13 +39,14 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo version=$(cat version.txt) >> $GITHUB_OUTPUT
+        run: echo "version=$(cat version.txt)" >> "$GITHUB_OUTPUT"
 
-      #   -- Build --
       - name: Build
         run: docker build -t "ghcr.io/podaac/ngap-dit-proxy:${{ steps.version.outputs.version }}" .
+
       - name: Tag as latest
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name != 'workflow_dispatch' && github.ref == 'refs/heads/main'
         run: docker tag ghcr.io/podaac/ngap-dit-proxy:${{ steps.version.outputs.version }} ghcr.io/podaac/ngap-dit-proxy:latest
+
       - name: Publish Docker images
         run: docker image push -a ghcr.io/podaac/ngap-dit-proxy
